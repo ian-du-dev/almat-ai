@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="theme-color" content="#f8f8f7">
-	<meta name="description" content="Ask Almat AI for three helpful answers to your question.">
+	<meta name="description" content="Ask Almat AI a question.">
 	<title>Almat AI</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="style.css">
@@ -16,122 +16,43 @@
 				<img src="logo.png" alt="" class="h-10 w-10 rounded-xl bg-white object-contain p-1 shadow-sm ring-1 ring-black/[0.06]">
 				<span class="text-lg font-semibold tracking-[-0.04em]">almat <span class="font-medium text-[#777873]">ai</span></span>
 			</a>
-			<div class="hidden items-center gap-2 rounded-full border border-black/[0.07] bg-white px-3.5 py-2 text-xs font-medium text-[#777873] sm:flex">
-				<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-				Three answers to your question
-			</div>
 		</div>
 	</header>
 
-	<main class="mx-auto max-w-5xl px-5 pb-20 pt-14 sm:px-8 sm:pt-20">
-		<section class="mx-auto max-w-3xl text-center">
-			<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs font-medium text-[#6e706b] shadow-sm">
-				<span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#f7eeee] text-[10px] font-bold text-[#df292c]">A</span>
-				A little help from AI
-			</div>
-			<h1 class="text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl">
-				Ask a question.<br class="hidden sm:block"> <span class="text-[#92938e]">Get three answers.</span>
+	<main class="mx-auto max-w-5xl px-5 pb-20 pt-20 sm:px-8 sm:pt-28">
+		<section class="mx-auto max-w-3xl">
+			<h1 class="text-center text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl">
+				What can I help with?
 			</h1>
-			<p class="mx-auto mt-5 max-w-xl text-base leading-7 text-[#777873] sm:text-lg">
-				Write what you want to know. Almat AI will give you three answers.
-			</p>
 		</section>
 
-		<section class="mx-auto mt-10 max-w-3xl" aria-label="Ask a question">
+		<section class="mx-auto mt-8 max-w-3xl" aria-label="Ask a question">
 			<form class="rounded-2xl border border-black/[0.09] bg-white p-3 shadow-[0_12px_40px_rgba(27,28,25,0.06)] transition focus-within:border-black/20 focus-within:shadow-[0_16px_48px_rgba(27,28,25,0.09)]">
 				<label for="prompt" class="sr-only">Your prompt</label>
 				<textarea id="prompt" name="prompt" rows="3" placeholder="Ask anything…"
 					class="block w-full resize-y border-0 bg-transparent px-3 py-3 text-base leading-7 text-[#20211f] outline-none placeholder:text-[#a3a49f] focus:ring-0 sm:px-4"
 					required></textarea>
 				<div class="flex flex-col gap-3 border-t border-black/[0.06] px-2 pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-3">
-					<p class="text-xs text-[#92938e]">Type your question below.</p>
 					<button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#20211f] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#383a36] focus:outline-none focus:ring-2 focus:ring-[#20211f] focus:ring-offset-2">
-						<span>Ask Almat</span>
+						<span>Send</span>
 						<svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
 							<path d="M4.167 10h11.666M10 4.167 15.833 10 10 15.833" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 						</svg>
 					</button>
 				</div>
 			</form>
-			<div class="mt-4 flex flex-wrap items-center justify-center gap-2">
-				<span class="mr-1 text-xs text-[#92938e]">For example</span>
-				<button type="button" data-prompt="How do I build a good habit?" class="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs text-[#777873] transition hover:border-black/20 hover:text-[#20211f]">How do I build a good habit?</button>
-				<button type="button" data-prompt="Explain a complex idea simply" class="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs text-[#777873] transition hover:border-black/20 hover:text-[#20211f]">Explain a complex idea simply</button>
-			</div>
 			<p id="form-message" class="mt-3 min-h-5 text-center text-xs text-[#777873]" aria-live="polite"></p>
 		</section>
-
-		<section class="mt-16" aria-labelledby="responses-heading">
-			<div class="mb-5 flex flex-wrap items-end justify-between gap-3">
-				<div>
-					<p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#92938e]">Your answers</p>
-					<h2 id="responses-heading" class="text-xl font-semibold tracking-[-0.035em]">Three answers</h2>
-				</div>
-				<span id="answer-status" class="rounded-full bg-[#efefed] px-3 py-1.5 text-xs font-medium text-[#777873]">Ready</span>
-			</div>
-
-			<div id="answers" class="grid gap-4 md:grid-cols-3" aria-live="polite">
-				<article class="min-h-[220px] rounded-2xl border border-black/[0.07] bg-white p-5">
-					<div class="flex items-center gap-3">
-						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f8eded] text-sm font-semibold text-[#df292c]">01</span>
-						<div>
-							<h3 class="text-sm font-semibold">Answer one</h3>
-						</div>
-					</div>
-					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
-					</div>
-				</article>
-
-				<article class="min-h-[220px] rounded-2xl border border-black/[0.07] bg-white p-5">
-					<div class="flex items-center gap-3">
-						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#efeffb] text-sm font-semibold text-[#4946d5]">02</span>
-						<div>
-							<h3 class="text-sm font-semibold">Answer two</h3>
-						</div>
-					</div>
-					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
-					</div>
-				</article>
-
-				<article class="min-h-[220px] rounded-2xl border border-black/[0.07] bg-white p-5">
-					<div class="flex items-center gap-3">
-						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fbf6df] text-sm font-semibold text-[#9b8500]">03</span>
-						<div>
-							<h3 class="text-sm font-semibold">Answer three</h3>
-						</div>
-					</div>
-					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
-					</div>
-				</article>
-			</div>
-		</section>
-		<footer class="mt-12 border-t border-black/[0.06] pt-5 text-center text-xs text-[#a3a49f]">
-			Made to help you find an answer.
-		</footer>
 	</main>
 	<script>
 		const API_URL = window.ALMAT_API_URL || "http://localhost:8000/api/ask";
 		const promptInput = document.querySelector("#prompt");
 		const formMessage = document.querySelector("#form-message");
-		const answerCards = document.querySelectorAll("#answers article");
-		const answerStatus = document.querySelector("#answer-status");
 		const submitButton = document.querySelector('button[type="submit"]');
-
-		document.querySelectorAll("[data-prompt]").forEach((suggestion) => {
-			suggestion.addEventListener("click", () => {
-				promptInput.value = suggestion.dataset.prompt;
-				promptInput.focus();
-				formMessage.textContent = "";
-			});
-		});
 
 		document.querySelector("form").addEventListener("submit", async (event) => {
 			event.preventDefault();
 			formMessage.textContent = "";
-			answerStatus.textContent = "Getting answers...";
 			submitButton.disabled = true;
 			submitButton.classList.add("cursor-wait", "opacity-60");
 
@@ -141,25 +62,12 @@
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ prompt: promptInput.value.trim() })
 				});
-				const result = await response.json();
 				if (!response.ok) {
-					throw new Error(result.detail || "Could not get answers. Please try again.");
+					throw new Error("Could not send your question. Please try again.");
 				}
-				if (!Array.isArray(result.answers) || result.answers.length !== answerCards.length) {
-					throw new Error("The server returned an unexpected response. Please try again.");
-				}
-
-				result.answers.forEach((answer, index) => {
-					answerCards[index].querySelector("h3").textContent = answer.title;
-					const content = answerCards[index].querySelector("div.mt-8");
-					content.classList.remove("border-dashed", "text-center");
-					content.classList.add("whitespace-pre-wrap", "break-words");
-					content.textContent = answer.text;
-				});
-				answerStatus.textContent = "Answers are ready";
+				formMessage.textContent = "Your question was sent.";
 			} catch (error) {
 				formMessage.textContent = error.message || "Could not reach Almat AI. Please try again.";
-				answerStatus.textContent = "Could not get answers";
 			} finally {
 				submitButton.disabled = false;
 				submitButton.classList.remove("cursor-wait", "opacity-60");
