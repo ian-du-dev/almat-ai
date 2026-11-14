@@ -5,15 +5,13 @@ API_KEY = load_key()
 
 prompt = input("prompt: ")
 
-print(API_KEY)
-
 client = Groq(api_key=API_KEY)
 completion = client.chat.completions.create(
     model="openai/gpt-oss-120b",
     messages=[
       {
         "role": "user",
-        "content": ""
+        "content": prompt
       }
     ],
     temperature=1,
