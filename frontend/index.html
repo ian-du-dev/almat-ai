@@ -50,7 +50,7 @@
 		</section>
 	</main>
 	<script>
-		const API_URL = window.ALMAT_API_URL || "http://localhost:8000/api/ask";
+		const API_URL = window.ALMAT_API_URL || "/api/chat";
 		const promptInput = document.querySelector("#prompt");
 		const formMessage = document.querySelector("#form-message");
 		const results = document.querySelector("#results");
@@ -61,6 +61,7 @@
 			event.preventDefault();
 			formMessage.textContent = "";
 			results.hidden = true;
+			transcriptOutput.textContent = "";
 			submitButton.disabled = true;
 			submitButton.classList.add("cursor-wait", "opacity-60");
 
@@ -70,20 +71,26 @@
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ prompt: promptInput.value.trim() })
 				});
-				const result = await response.json();
+				const result = await response.json().catch(() => ({}));
 				if (!response.ok) {
 					throw new Error(result.error || "Could not send your question. Please try again.");
 				}
-				if (!Array.isArray(result.transcript) || result.transcript.length === 0) {
-					throw new Error("The server returned no transcript.");
+				if (!result || !Array.isArray(result.transcript) || result.transcript.length === 0 ||
+					result.transcript.some((entry) => !entry || typeof entry.round !== "number" ||
+						typeof entry.name !== "string" || typeof entry.text !== "string")) {
+					throw new Error("The server returned an invalid transcript.");
 				}
 				transcriptOutput.textContent = result.transcript
-					.map((entry) => `Round ${entry.round} · ${entry.name}\n${entry.text}`)
+					.map((entry) => entry.round === 0
+						? `${entry.name}\n${entry.text}`
+						: `Round ${entry.round} · ${entry.name}\n${entry.text}`)
 					.join("\n\n");
 				results.hidden = false;
 				formMessage.textContent = "Your transcript is ready.";
 			} catch (error) {
-				formMessage.textContent = error.message || "Could not reach Almat AI. Please try again.";
+				formMessage.textContent = error instanceof TypeError
+					? "Could not reach the Vercel API. Check the deployment and try again."
+					: error.message || "Could not reach Almat AI. Please try again.";
 			} finally {
 				submitButton.disabled = false;
 				submitButton.classList.remove("cursor-wait", "opacity-60");
