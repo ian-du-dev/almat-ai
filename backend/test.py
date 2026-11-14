@@ -1,7 +1,7 @@
-from load_key import load_key
+import load
 from groq import Groq
 
-API_KEY = load_key()
+API_KEY = load.load_key()
 
 prompt = input("prompt: ")
 
