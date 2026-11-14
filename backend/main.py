@@ -21,9 +21,7 @@ class AI:
             model=self.model,
             messages=transcript,
             temperature=1,
-            max_completion_tokens=2048,
             top_p=1,
-            reasoning_effort="medium",
             stream=True,
             stop=None
         )
@@ -37,12 +35,9 @@ class AI:
 
 prompt = input("prompt: ")
 
-transcript += [
-    {
-        "role": "user",
-        "content": prompt
-    }
-]
+total_msg = ""
+
+total_msg += "USER: " + prompt + "\n"
 
 current_round = 1
 
@@ -52,32 +47,36 @@ AI_3 = AI(client, "AI 3", MODEL_3)
 
 AIs = [AI_1, AI_2, AI_3]
 
-transcript += [
-    {
-        "role": "system",
-        "content": HARNESS
-    }
-]
+total_msg += "SYSTEM: " + HARNESS + "\n"
 
 def round(current_round):
-    global transcript
-    transcript += [{
-        "role": "system",
-        "content": f"Round {current_round} of {ROUNDS}"
-    }]
+    global transcript, total_msg
+
+    total_msg += "SYSTEM: Round " + str(current_round) + " of " + str(ROUNDS) + "\n"
 
     if current_round == ROUNDS:
-        transcript += [{
-            "role": "system",
-            "content": "This is the final round. Please provide a summary of the discussion and any conclusions reached."
-        }]
+        total_msg += "SYSTEM: This is the final round. Please provide a summary of the discussion and any conclusions reached.\n"
     
+    transcript += [{
+        "role": "user",
+        "content": total_msg
+    }]
+    
+    total_ai_msg = ""
+
     for ai in AIs:
         ai_response = ai.generate_response(transcript)
-        transcript += [{
-            "role": ai.name,
-            "content": ai_response
-        }]
+
+        total_ai_msg += ai.name + ": " + ai_response + "\n"
+
+        print(ai.name + ": " + ai_response)
+    
+    transcript += [{
+        "role": "assistant",
+        "content": total_ai_msg
+    }]
+    
+    total_msg = ""
 
 for current_round in range(1, ROUNDS + 1):
     round(current_round)

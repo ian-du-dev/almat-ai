@@ -1,12 +1,11 @@
 import load
 from groq import Groq
 
-API_KEY_GROQ = load_key()
 API_KEY = load.load_key()
 
 prompt = input("prompt: ")
 
-client = Groq(api_key=API_KEY_GROQ)
+client = Groq(api_key=API_KEY)
 completion = client.chat.completions.create(
     model="openai/gpt-oss-120b",
     messages=[
