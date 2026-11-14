@@ -4,8 +4,8 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="theme-color" content="#f8f8f7">
-	<meta name="description" content="Ask Almat AI and compare thoughtful perspectives from three AI models.">
-	<title>Almat AI — Think it through, together.</title>
+	<meta name="description" content="Ask Almat AI for three helpful answers to your question.">
+	<title>Almat AI</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="style.css">
 </head>
@@ -18,7 +18,7 @@
 			</a>
 			<div class="hidden items-center gap-2 rounded-full border border-black/[0.07] bg-white px-3.5 py-2 text-xs font-medium text-[#777873] sm:flex">
 				<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-				Three perspectives. One better answer.
+				Three answers to your question
 			</div>
 		</div>
 	</header>
@@ -27,13 +27,13 @@
 		<section class="mx-auto max-w-3xl text-center">
 			<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs font-medium text-[#6e706b] shadow-sm">
 				<span class="flex h-5 w-5 items-center justify-center rounded-full bg-[#f7eeee] text-[10px] font-bold text-[#df292c]">A</span>
-				Answers that have been challenged
+				A little help from AI
 			</div>
 			<h1 class="text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl">
-				Think it through,<br class="hidden sm:block"> <span class="text-[#92938e]">together.</span>
+				Ask a question.<br class="hidden sm:block"> <span class="text-[#92938e]">Get three answers.</span>
 			</h1>
 			<p class="mx-auto mt-5 max-w-xl text-base leading-7 text-[#777873] sm:text-lg">
-				Ask a question. Get three AI perspectives, refined through discussion into a more considered answer.
+				Write what you want to know. Almat AI will give you three answers.
 			</p>
 		</section>
 
@@ -44,9 +44,9 @@
 					class="block w-full resize-y border-0 bg-transparent px-3 py-3 text-base leading-7 text-[#20211f] outline-none placeholder:text-[#a3a49f] focus:ring-0 sm:px-4"
 					required></textarea>
 				<div class="flex flex-col gap-3 border-t border-black/[0.06] px-2 pt-3 sm:flex-row sm:items-center sm:justify-between sm:px-3">
-					<p class="text-xs text-[#92938e]">Be curious. The AIs will take it from here.</p>
+					<p class="text-xs text-[#92938e]">Type your question below.</p>
 					<button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#20211f] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#383a36] focus:outline-none focus:ring-2 focus:ring-[#20211f] focus:ring-offset-2">
-						<span>Get perspectives</span>
+						<span>Ask Almat</span>
 						<svg aria-hidden="true" viewBox="0 0 20 20" fill="none" class="h-4 w-4">
 							<path d="M4.167 10h11.666M10 4.167 15.833 10 10 15.833" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
 						</svg>
@@ -54,7 +54,7 @@
 				</div>
 			</form>
 			<div class="mt-4 flex flex-wrap items-center justify-center gap-2">
-				<span class="mr-1 text-xs text-[#92938e]">Try asking</span>
+				<span class="mr-1 text-xs text-[#92938e]">For example</span>
 				<button type="button" data-prompt="How do I build a good habit?" class="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs text-[#777873] transition hover:border-black/20 hover:text-[#20211f]">How do I build a good habit?</button>
 				<button type="button" data-prompt="Explain a complex idea simply" class="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-xs text-[#777873] transition hover:border-black/20 hover:text-[#20211f]">Explain a complex idea simply</button>
 			</div>
@@ -64,24 +64,22 @@
 		<section class="mt-16" aria-labelledby="responses-heading">
 			<div class="mb-5 flex flex-wrap items-end justify-between gap-3">
 				<div>
-					<p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#92938e]">The discussion</p>
-					<h2 id="responses-heading" class="text-xl font-semibold tracking-[-0.035em]">Three perspectives</h2>
+					<p class="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#92938e]">Your answers</p>
+					<h2 id="responses-heading" class="text-xl font-semibold tracking-[-0.035em]">Three answers</h2>
 				</div>
-				<span class="rounded-full bg-[#efefed] px-3 py-1.5 text-xs font-medium text-[#777873]">Ready when you are</span>
+				<span id="answer-status" class="rounded-full bg-[#efefed] px-3 py-1.5 text-xs font-medium text-[#777873]">Ready</span>
 			</div>
 
-			<div class="grid gap-4 md:grid-cols-3">
+			<div id="answers" class="grid gap-4 md:grid-cols-3" aria-live="polite">
 				<article class="min-h-[220px] rounded-2xl border border-black/[0.07] bg-white p-5">
 					<div class="flex items-center gap-3">
 						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f8eded] text-sm font-semibold text-[#df292c]">01</span>
 						<div>
-							<h3 class="text-sm font-semibold">AI perspective one</h3>
-							<p class="mt-0.5 text-xs text-[#92938e]">First point of view</p>
+							<h3 class="text-sm font-semibold">Answer one</h3>
 						</div>
 					</div>
 					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm font-medium text-[#777873]">Your first response starts here</p>
-						<p class="mt-1 text-xs leading-5 text-[#a3a49f]">Submit a prompt to begin the discussion.</p>
+						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
 					</div>
 				</article>
 
@@ -89,13 +87,11 @@
 					<div class="flex items-center gap-3">
 						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#efeffb] text-sm font-semibold text-[#4946d5]">02</span>
 						<div>
-							<h3 class="text-sm font-semibold">AI perspective two</h3>
-							<p class="mt-0.5 text-xs text-[#92938e]">A different angle</p>
+							<h3 class="text-sm font-semibold">Answer two</h3>
 						</div>
 					</div>
 					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm font-medium text-[#777873]">Another angle, considered</p>
-						<p class="mt-1 text-xs leading-5 text-[#a3a49f]">Compare ideas and discover what holds up.</p>
+						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
 					</div>
 				</article>
 
@@ -103,24 +99,26 @@
 					<div class="flex items-center gap-3">
 						<span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fbf6df] text-sm font-semibold text-[#9b8500]">03</span>
 						<div>
-							<h3 class="text-sm font-semibold">AI perspective three</h3>
-							<p class="mt-0.5 text-xs text-[#92938e]">A final perspective</p>
+							<h3 class="text-sm font-semibold">Answer three</h3>
 						</div>
 					</div>
 					<div class="mt-8 rounded-xl border border-dashed border-black/[0.09] bg-[#fbfbfa] px-4 py-5 text-center">
-						<p class="text-sm font-medium text-[#777873]">A third voice joins in</p>
-						<p class="mt-1 text-xs leading-5 text-[#a3a49f]">Together, the models work toward a better answer.</p>
+						<p class="text-sm leading-6 text-[#a3a49f]">Your answer will show up here.</p>
 					</div>
 				</article>
 			</div>
 		</section>
 		<footer class="mt-12 border-t border-black/[0.06] pt-5 text-center text-xs text-[#a3a49f]">
-			Almat AI brings multiple perspectives together.
+			Made to help you find an answer.
 		</footer>
 	</main>
 	<script>
+		const API_URL = window.ALMAT_API_URL || "http://localhost:8000/api/ask";
 		const promptInput = document.querySelector("#prompt");
 		const formMessage = document.querySelector("#form-message");
+		const answerCards = document.querySelectorAll("#answers article");
+		const answerStatus = document.querySelector("#answer-status");
+		const submitButton = document.querySelector('button[type="submit"]');
 
 		document.querySelectorAll("[data-prompt]").forEach((suggestion) => {
 			suggestion.addEventListener("click", () => {
@@ -130,9 +128,42 @@
 			});
 		});
 
-		document.querySelector("form").addEventListener("submit", (event) => {
+		document.querySelector("form").addEventListener("submit", async (event) => {
 			event.preventDefault();
-			formMessage.textContent = "The AI discussion service is not connected yet.";
+			formMessage.textContent = "";
+			answerStatus.textContent = "Getting answers...";
+			submitButton.disabled = true;
+			submitButton.classList.add("cursor-wait", "opacity-60");
+
+			try {
+				const response = await fetch(API_URL, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ prompt: promptInput.value.trim() })
+				});
+				const result = await response.json();
+				if (!response.ok) {
+					throw new Error(result.detail || "Could not get answers. Please try again.");
+				}
+				if (!Array.isArray(result.answers) || result.answers.length !== answerCards.length) {
+					throw new Error("The server returned an unexpected response. Please try again.");
+				}
+
+				result.answers.forEach((answer, index) => {
+					answerCards[index].querySelector("h3").textContent = answer.title;
+					const content = answerCards[index].querySelector("div.mt-8");
+					content.classList.remove("border-dashed", "text-center");
+					content.classList.add("whitespace-pre-wrap", "break-words");
+					content.textContent = answer.text;
+				});
+				answerStatus.textContent = "Answers are ready";
+			} catch (error) {
+				formMessage.textContent = error.message || "Could not reach Almat AI. Please try again.";
+				answerStatus.textContent = "Could not get answers";
+			} finally {
+				submitButton.disabled = false;
+				submitButton.classList.remove("cursor-wait", "opacity-60");
+			}
 		});
 	</script>
 </body>
