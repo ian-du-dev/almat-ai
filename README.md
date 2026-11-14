@@ -2,7 +2,7 @@
 
 <img src="frontend/logo.png" alt="Almat AI logo" width="200"/>
 
-[https://ian-du-dev.github.io/almat-ai/](https://ian-du-dev.github.io/almat-ai/)
+[https://ian-du-dev.github.io/almat-ai/frontend](https://ian-du-dev.github.io/almat-ai/frontend)
 
 **Let multiple AIs debate, refine, and agree, so you get answers that have been challenged before they reach you.**
 
