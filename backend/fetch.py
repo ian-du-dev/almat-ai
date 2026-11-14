@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from main import main
+
 app = FastAPI()
 
 # Allow your frontend to communicate with this backend
@@ -22,10 +24,7 @@ class PromptRequest(BaseModel):
 async def generate_ai_response(request: PromptRequest):
     user_prompt = request.prompt
     
-    # --- YOUR AI LOGIC GOES HERE ---
-    # e.g., response = openai_client.chat.completions.create(...)
-    ai_reply = 
-    # --------------------------------
+    ai_reply = main(user_prompt)
     
     return {"reply": ai_reply}
 
