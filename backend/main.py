@@ -1,89 +1,30 @@
-import load
-from groq import Groq
+from backend.app.load_key import load_key
+API_KEY = load_key()
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-API_KEY = load.load_key()
-MODEL_1, MODEL_2, MODEL_3 = load.load_models()
-HARNESS = load.load_harness()
-ROUNDS = load.load_rounds()
+from backend.ai import prompt
 
-def main(prompt):
-    response = ""
-    transcript = []
+app = FastAPI()
 
-    client = Groq(api_key=API_KEY)
+# Allow your frontend to communicate with this backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["ian-du-dev.github.io/almat-ai/frontent"],  # In production, replace "*" with your frontend's actual URL
+    allow_methods=["ian-du-dev.github.io/almat-ai/frontent"],
+    allow_headers=["ian-du-dev.github.io/almat-ai/frontent"],
+)
 
-    class AI:
-        def __init__(self, client, name, model):
-            self.client = client
-            self.name = name
-            self.model = model
+# Define the expected structure of the incoming JSON data
+class PromptRequest(BaseModel):
+    prompt: str
 
-        def generate_response(self, transcript):
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=transcript,
-                temperature=1,
-                top_p=1,
-                stream=True,
-                stop=None
-            )
-
-            response = ""
-            
-            for chunk in completion:
-                response += chunk.choices[0].delta.content or ""
-
-            return response
-
-    prompt = input("Prompt a controversial, debateable topic: ")
-
-    total_msg = ""
-
-    total_msg += "USER: " + prompt + "\n"
-
-    current_round = 1
-
-    AI_1 = AI(client, "AI 1", MODEL_1)
-    AI_2 = AI(client, "AI 2", MODEL_2)
-    AI_3 = AI(client, "AI 3", MODEL_3)
-
-    AIs = [AI_1, AI_2, AI_3]
-
-    total_msg += "SYSTEM: " + HARNESS + "\n"
-
-    def round(current_round):
-        global transcript, total_msg
-
-        response += "Round " + str(current_round) + " of " + str(ROUNDS)
-
-        total_msg += "SYSTEM: Round " + str(current_round) + " of " + str(ROUNDS) + "\n"
-
-        if current_round == ROUNDS:
-            total_msg += "SYSTEM: This is the final round. Please provide a summary of the discussion and any conclusions reached.\n"
-        
-        transcript += [{
-            "role": "user",
-            "content": total_msg
-        }]
-        
-        total_ai_msg = ""
-
-        for ai in AIs:
-            ai_response = ai.generate_response(transcript)
-
-            total_ai_msg += ai.name + ": " + ai_response + "\n"
-
-            response += ai.name + ": " + ai_response
-        
-        transcript += [{
-            "role": "assistant",
-            "content": total_ai_msg
-        }]
-        
-        total_msg = ""
-
-    for current_round in range(1, ROUNDS + 1):
-        round(current_round)
+@app.post("/chat")
+async def generate_ai_response(request: PromptRequest):
+    user_prompt = request.prompt
     
-    return response
+    ai_reply = prompt(user_prompt)
     
+    return {"reply": ai_reply}
+
