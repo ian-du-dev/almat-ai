@@ -52,6 +52,10 @@ total_msg += "SYSTEM: " + HARNESS + "\n"
 def round(current_round):
     global transcript, total_msg
 
+    print()
+    print("Round " + str(current_round) + " of " + str(ROUNDS))
+    print("--------------------------------------------------")
+
     total_msg += "SYSTEM: Round " + str(current_round) + " of " + str(ROUNDS) + "\n"
 
     if current_round == ROUNDS:
@@ -70,6 +74,8 @@ def round(current_round):
         total_ai_msg += ai.name + ": " + ai_response + "\n"
 
         print(ai.name + ": " + ai_response)
+        print("--------------------------------------------------")
+        print()
     
     transcript += [{
         "role": "assistant",
@@ -80,5 +86,3 @@ def round(current_round):
 
 for current_round in range(1, ROUNDS + 1):
     round(current_round)
-
-print(transcript)
