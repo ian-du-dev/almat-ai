@@ -33,7 +33,7 @@ class AI:
 
         return response
 
-prompt = input("prompt: ")
+prompt = input("Prompt a controversial, debateable topic: ")
 
 total_msg = ""
 
