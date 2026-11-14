@@ -2,8 +2,9 @@ import load
 
 API_KEY = load.load_key()
 MODEL_1, MODEL_2, MODEL_3 = load.load_models()
+HARNESS = load.load_harness()
 
-message_log = []
+transcript = []
 
 client = Groq(api_key=API_KEY)
 
@@ -13,10 +14,10 @@ class AI:
         self.name = name
         self.model = model
 
-    def generate_response(self, prompt, message_log):
+    def generate_response(self, prompt, transcript):
         completion = self.client.chat.completions.create(
             model=self.model,
-            messages=message_log + [
+            messages=transcript + [
                 {
                     "role": "user",
                     "content": prompt
