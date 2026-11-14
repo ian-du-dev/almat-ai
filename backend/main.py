@@ -1,136 +1,111 @@
-import json
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import os
+from pathlib import Path
 
-import load
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from groq import APIError, Groq
+from pydantic import BaseModel, Field
 
+from backend import load
+
+DEFAULT_MODEL = "openai/gpt-oss-120b"
+ROLES = ["General reasoner", "Skeptical reviewer", "Practical adviser"]
 API_KEY = load.load_key()
-MODEL_1, MODEL_2, MODEL_3 = load.load_models()
 HARNESS = load.load_harness()
-ROUNDS = load.load_rounds()
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
-client = Groq(api_key=API_KEY)
-
-
-class AI:
-    def __init__(self, name, model):
-        self.name = name
-        self.model = model
-
-    def generate_response(self, transcript):
-        completion = client.chat.completions.create(
-            model=self.model,
-            messages=transcript,
-            temperature=1,
-            top_p=1,
-            stream=True,
-            stop=None,
-        )
-
-        response = ""
-        for chunk in completion:
-            response += chunk.choices[0].delta.content or ""
-        return response
+app = FastAPI(title="Almat AI")
 
 
-AIs = [
-    AI("AI 1", MODEL_1),
-    AI("AI 2", MODEL_2),
-    AI("AI 3", MODEL_3),
-]
+class PromptRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=4000)
 
 
-def run_discussion(prompt):
-    transcript = []
-    results = []
-    total_msg = "USER: " + prompt + "\nSYSTEM: " + HARNESS + "\n"
-
-    for current_round in range(1, ROUNDS + 1):
-        total_msg += "SYSTEM: Round " + str(current_round) + " of " + str(ROUNDS) + "\n"
-        if current_round == ROUNDS:
-            total_msg += (
-                "SYSTEM: This is the final round. Please provide a summary "
-                "of the discussion and any conclusions reached.\n"
-            )
-
-        transcript.append({"role": "user", "content": total_msg})
-        total_ai_msg = ""
-
-        for ai in AIs:
-            response = ai.generate_response(transcript)
-            results.append({
-                "round": current_round,
-                "name": ai.name,
-                "text": response,
-            })
-            total_ai_msg += ai.name + ": " + response + "\n"
-
-        transcript.append({"role": "assistant", "content": total_ai_msg})
-        total_msg = ""
-
-    return results
-
-
-class APIHandler(BaseHTTPRequestHandler):
-    allowed_origins = {
-        "https://ian-du-dev.github.io",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
+def build_harness(name, other_names, role, round_number, max_rounds):
+    text = HARNESS
+    values = {
+        "AI_NAME": name,
+        "NUM_AIS": "3",
+        "OTHER_AI_NAMES": other_names,
+        "ROLE": role,
+        "ROUND": str(round_number),
+        "MAX_ROUNDS": str(max_rounds),
+        "MAX_WORDS_PER_TURN": "200",
     }
-
-    def send_json(self, status, data):
-        body = json.dumps(data).encode("utf-8")
-        self.send_response(status)
-        origin = self.headers.get("Origin")
-        if origin in self.allowed_origins:
-            self.send_header("Access-Control-Allow-Origin", origin)
-            self.send_header("Vary", "Origin")
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
-
-    def do_OPTIONS(self):
-        self.send_response(204)
-        origin = self.headers.get("Origin")
-        if origin in self.allowed_origins:
-            self.send_header("Access-Control-Allow-Origin", origin)
-            self.send_header("Vary", "Origin")
-        self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.send_header("Content-Length", "0")
-        self.end_headers()
-
-    def do_POST(self):
-        if self.path != "/api/ask":
-            self.send_json(404, {"error": "Not found."})
-            return
-
-        try:
-            content_length = int(self.headers.get("Content-Length", "0"))
-            if content_length <= 0 or content_length > 20000:
-                self.send_json(400, {"error": "Enter a prompt and try again."})
-                return
-            data = json.loads(self.rfile.read(content_length))
-        except (ValueError, json.JSONDecodeError):
-            self.send_json(400, {"error": "The request was not valid JSON."})
-            return
-
-        prompt = data.get("prompt") if isinstance(data, dict) else None
-        if not isinstance(prompt, str) or not prompt.strip() or len(prompt) > 4000:
-            self.send_json(400, {"error": "Enter a prompt of up to 4,000 characters."})
-            return
-
-        try:
-            transcript = run_discussion(prompt.strip())
-        except APIError as error:
-            print("AI service request failed:", error)
-            self.send_json(502, {"error": "The AI service could not complete the request."})
-            return
-
-        self.send_json(200, {"transcript": transcript})
+    for key, value in values.items():
+        text = text.replace("{{" + key + "}}", value)
+    return text
 
 
-if __name__ == "__main__":
-    print("Almat AI API listening on http://localhost:8000")
-    ThreadingHTTPServer(("0.0.0.0", 8000), APIHandler).serve_forever()
+def get_round_count():
+    try:
+        rounds = int(os.getenv("ROUNDS", "2"))
+    except ValueError as error:
+        raise HTTPException(status_code=500, detail="ROUNDS must be a number from 1 to 4.") from error
+    if not 1 <= rounds <= 4:
+        raise HTTPException(status_code=500, detail="ROUNDS must be a number from 1 to 4.")
+    return rounds
+
+
+@app.post("/api/chat")
+def chat(request: PromptRequest):
+    if not API_KEY:
+        raise HTTPException(status_code=503, detail="Add GROQ_API_KEY to the Vercel environment variables.")
+
+    prompt = request.prompt.strip()
+    if not prompt:
+        raise HTTPException(status_code=422, detail="Enter a prompt.")
+
+    rounds = get_round_count()
+    configured_models = load.load_models()
+    models = [model or DEFAULT_MODEL for model in configured_models]
+    participants = [
+        {"name": f"AI {index + 1}", "model": model, "role": ROLES[index]}
+        for index, model in enumerate(models)
+    ]
+    client = Groq(api_key=API_KEY)
+    history = [{"role": "user", "content": prompt}]
+    transcript = [{"round": 0, "name": "You", "text": prompt}]
+
+    try:
+        for round_number in range(1, rounds + 1):
+            if round_number > 1:
+                history.append({
+                    "role": "user",
+                    "content": f"Continue the discussion. This is round {round_number} of {rounds}.",
+                })
+
+            for participant in participants:
+                other_names = ", ".join(
+                    item["name"] for item in participants if item["name"] != participant["name"]
+                )
+                system_prompt = build_harness(
+                    participant["name"],
+                    other_names,
+                    participant["role"],
+                    round_number,
+                    rounds,
+                )
+                completion = client.chat.completions.create(
+                    model=participant["model"],
+                    messages=[{"role": "system", "content": system_prompt}, *history],
+                    max_completion_tokens=2048,
+                )
+                text = completion.choices[0].message.content
+                if not text or not text.strip():
+                    raise HTTPException(status_code=502, detail="The AI service returned an empty answer.")
+
+                text = text.strip()
+                transcript.append({
+                    "round": round_number,
+                    "name": participant["name"],
+                    "text": text,
+                })
+                history.append({"role": "assistant", "content": f"{participant['name']}: {text}"})
+    except APIError as error:
+        raise HTTPException(status_code=502, detail="The AI service could not complete the request.") from error
+
+    return {"transcript": transcript}
+
+
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

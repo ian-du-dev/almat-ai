@@ -1,7 +1,7 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/chat.js": {
-      "includeFiles": "backend/harness.txt",
+    "backend/main.py": {
       "maxDuration": 60
     }
   }
