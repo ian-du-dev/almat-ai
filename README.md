@@ -5,6 +5,7 @@
 [https://ian-du-dev.github.io/almat-ai/frontend](https://ian-du-dev.github.io/almat-ai/frontend)
 
 **Let multiple AIs debate, refine, and agree, so you get answers that have been challenged before they reach you.**
+
 Almat AI is a website where several AI models discuss your prompt with each other. Instead of relying on a single model's first answer, Almat AI puts multiple models in a conversation. They critique, build on, and correct each other's ideas until they reach a conclusion they all consider satisfactory and valid.
 
 ---
