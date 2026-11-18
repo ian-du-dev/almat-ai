@@ -8,10 +8,6 @@
 
 Almat AI is a website where several AI models discuss your prompt with each other. Instead of relying on a single model's first answer, Almat AI puts multiple models in a conversation. They critique, build on, and correct each other's ideas until they reach a conclusion they all consider satisfactory and valid.
 
-## Vercel setup
-
-Deploy this repository to Vercel with the repository root as the Root Directory. Add `GROQ_API_KEY` in the project's Environment Variables, then redeploy. The page sends prompts to `/api/chat`; `MODEL_1`, `MODEL_2`, and `MODEL_3` are optional and default to `openai/gpt-oss-120b`. `ROUNDS` is optional and defaults to `2` (allowed values: 1–4).
-
 ---
 
 ## Table of Contents
